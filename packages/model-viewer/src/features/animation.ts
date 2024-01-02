@@ -14,7 +14,7 @@
  */
 
 import {property} from 'lit/decorators.js';
-import {LoopOnce, LoopPingPong, LoopRepeat} from 'three';
+import {LoopOnce, LoopPingPong, LoopRepeat, Quaternion, Object3D} from 'three';
 
 import ModelViewerElementBase, {$getModelIsVisible, $needsRender, $onModelLoad, $renderer, $scene, $tick} from '../model-viewer-base.js';
 import {Constructor} from '../utilities.js';
@@ -26,6 +26,11 @@ const $paused = Symbol('paused');
 
 interface PlayAnimationOptions {
   repetitions: number, pingpong: boolean,
+}
+
+interface ExtendedObject3DType extends Object3D {
+  quaternionAtKeyframe1: Quaternion,
+  initialQuaternion: Quaternion,
 }
 
 const DEFAULT_PLAY_OPTIONS: PlayAnimationOptions = {
@@ -105,6 +110,55 @@ export const AnimationMixin = <T extends Constructor<ModelViewerElementBase>>(
     set timeScale(value: number) {
       this[$scene].animationTimeScale = value;
     }
+
+    // monk mönk
+		resetRotationSmooth() {
+			const currentAnimation = this[$scene].animations[0];
+			if (!currentAnimation) return
+
+			for (const object of this[$scene].model!.children as ExtendedObject3DType[]) {
+				const rotationTrack = currentAnimation.tracks.find(track => track.name === `${object.name}.quaternion`)!;
+
+				// Assuming rotationTrack.values contains [x1, y1, z1, w1, x2, y2, z2, w2, ...]
+				// at frame 0, the quaternion is x1, y1, z1, w1
+				const quaternionAtKeyframe1 = new Quaternion(
+					rotationTrack.values[0], // x
+					rotationTrack.values[1], // y
+					rotationTrack.values[2], // z
+					rotationTrack.values[3]  // w
+				);
+
+				// get the current quaternion of the object
+				const initialQuaternion = object.quaternion.clone();
+
+				// save initial quaternion values to the object
+				// they will be used to compute the rotation in the upcoming animate() private function below
+				object.quaternionAtKeyframe1 = quaternionAtKeyframe1;
+				object.initialQuaternion = initialQuaternion;
+			}
+
+			let t = 0;
+			const rotationDuration = 750; // Duration of the animation in milliseconds
+			const startTime = performance.now();
+
+			const animate = () => {
+				const elapsedTime = performance.now() - startTime;
+				t = elapsedTime / rotationDuration;
+
+				// easeOutQuart
+				const easedT = 1 - Math.pow(1 - t, 4);
+
+				if (t < 1) {
+					for (const object of this[$scene].model!.children as ExtendedObject3DType[]) {
+						const toQuaternion = new Quaternion().slerpQuaternions(object.initialQuaternion, object.quaternionAtKeyframe1, easedT);
+						object.quaternion.copy(toQuaternion);
+					}
+					this[$needsRender]();
+					requestAnimationFrame(animate);
+				}
+			}
+			animate();
+		}
 
     pause() {
       if (this[$paused]) {
