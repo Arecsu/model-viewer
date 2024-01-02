@@ -24,7 +24,12 @@ export const HAS_WEBXR_HIT_TEST_API = HAS_WEBXR_DEVICE_API &&
 
 export const HAS_RESIZE_OBSERVER = self.ResizeObserver != null;
 
-export const HAS_INTERSECTION_OBSERVER = self.IntersectionObserver != null;
+// monk mönk
+// const HAS_INTERSECTION_OBSERVER = self.IntersectionObserver != null;
+// THIS THING MAKES IT STUTTER IN THE KEEN SLIDER BECAUSE WHEN IT WANTS TO TURN
+// IT VISIBLE, THE KEEN SLIDER IS IN THE MIDDLE OF THE ANIMATION AND RIP EVERYTHING
+// export const HAS_INTERSECTION_OBSERVER = self.IntersectionObserver != null;
+export const HAS_INTERSECTION_OBSERVER = false;
 
 export const IS_WEBXR_AR_CANDIDATE = HAS_WEBXR_HIT_TEST_API;
 
