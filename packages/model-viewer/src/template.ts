@@ -208,6 +208,8 @@ canvas {
   user-select: none;
 
   display: var(--ar-button-display, block);
+  --ar-button-width: 40px;
+  --ar-button-height: 40px;
 }
 
 .slot.ar-button:not(.enabled) {
@@ -219,10 +221,11 @@ canvas {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: 40px;
-  height: 40px;
+  width: var(--ar-button-width);
+  height: var(--ar-button-height);
   cursor: pointer;
-  background-color: #fff;
+  // background-color: #fff;
+  background-color: #252525;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.15);
   border-radius: 100px;
 }
@@ -233,10 +236,15 @@ canvas {
 
 #default-ar-button {
   position: absolute;
-  bottom: 16px;
-  right: 16px;
+  right: 1rem;
+  top: calc(100vh - var(--ar-button-height) - 1rem);
+  top: calc(100dvh - var(--ar-button-height) - 1rem);
   transform: scale(var(--ar-button-scale, 1));
   transform-origin: bottom right;
+}
+
+#default-ar-button svg {
+  fill: white;
 }
 
 .slot.pan-target {
