@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-import {AnimationAction, AnimationActionLoopStyles, AnimationClip, AnimationMixer, Box3, Camera, Euler, Event as ThreeEvent, LoopPingPong, LoopRepeat, Material, Matrix3, Mesh, Object3D, PerspectiveCamera, Raycaster, Scene, Sphere, Texture, Triangle, Vector2, Vector3, WebGLRenderer} from 'three';
+import {ACESFilmicToneMapping, AnimationAction, AnimationActionLoopStyles, AnimationClip, AnimationMixer, Box3, Camera, Euler, Event as ThreeEvent, LoopPingPong, LoopRepeat, Material, Matrix3, Mesh, Object3D, PerspectiveCamera, Raycaster, Scene, Sphere, Texture, ToneMapping, Triangle, Vector2, Vector3, WebGLRenderer} from 'three';
 import {CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import {reduceVertices} from 'three/examples/jsm/utils/SceneUtils.js';
 
-import {ToneMappingValue} from '../features/environment.js';
 import {$currentGLTF, $model, $originalGltfJson} from '../features/scene-graph.js';
 import {$nodeFromIndex, $nodeFromPoint} from '../features/scene-graph/model.js';
 import ModelViewerElementBase, {$renderer, EffectComposerInterface, RendererInterface} from '../model-viewer-base.js';
@@ -99,7 +98,7 @@ export class ModelScene extends Scene {
   public bakedShadows = new Set<Mesh>();
 
   public exposure = 1;
-  public toneMapping: ToneMappingValue = 'auto';
+  public toneMapping: ToneMapping = ACESFilmicToneMapping;
   public canScale = true;
 
   private isDirty = false;
@@ -617,6 +616,8 @@ export class ModelScene extends Scene {
       x = this.targetDamperX.update(x, goal.x, delta, normalization);
       y = this.targetDamperY.update(y, goal.y, delta, normalization);
       z = this.targetDamperZ.update(z, goal.z, delta, normalization);
+      this.groundedSkybox.position.x = -x;
+      this.groundedSkybox.position.z = -z;
       this.target.position.set(x, y, z);
       this.target.updateMatrixWorld();
       this.queueRender();
@@ -644,6 +645,7 @@ export class ModelScene extends Scene {
    */
   set yaw(radiansY: number) {
     this.rotation.y = radiansY;
+    this.groundedSkybox.rotation.y = -radiansY;
     this.queueRender();
   }
 
