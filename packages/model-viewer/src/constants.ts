@@ -24,12 +24,14 @@ export const HAS_WEBXR_HIT_TEST_API = HAS_WEBXR_DEVICE_API &&
 
 export const HAS_RESIZE_OBSERVER = self.ResizeObserver != null;
 
-// monk mönk
-// const HAS_INTERSECTION_OBSERVER = self.IntersectionObserver != null;
-// THIS THING MAKES IT STUTTER IN THE KEEN SLIDER BECAUSE WHEN IT WANTS TO TURN
-// IT VISIBLE, THE KEEN SLIDER IS IN THE MIDDLE OF THE ANIMATION AND RIP EVERYTHING
-// export const HAS_INTERSECTION_OBSERVER = self.IntersectionObserver != null;
-export const HAS_INTERSECTION_OBSERVER = false;
+/* monk mönk
+ * THIS USED TO MAKE IT STUTTER THE KEEN SLIDER BECAUSE WHEN IT WANTS TO TURN
+ * IT VISIBLE, THE KEEN SLIDER IS IN THE MIDDLE OF THE ANIMATION AND RIP EVERYTHING
+ * for now we go back to the default behavior of model-viewer because it seems to be
+ * working good
+ */
+export const HAS_INTERSECTION_OBSERVER = self.IntersectionObserver != null;
+// export const HAS_INTERSECTION_OBSERVER = false;
 
 export const IS_WEBXR_AR_CANDIDATE = HAS_WEBXR_HIT_TEST_API;
 
